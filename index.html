@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>美容サロン集客・回収シミュレーター</title>
+    
+    <!-- LINE対応 OGP -->
+    <meta property="og:title" content="💇 美容サロン集客・回収シミュレーター">
+    <meta property="og:description" content="HPで勝ち切り → LINEで利益最大化。実額ベース・丸め無し">
+    <meta property="og:type" content="website">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 12px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 16px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 16px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .toggle-btn {
+            width: 100%;
+            padding: 10px 12px;
+            background: #f0f2f5;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .toggle-btn:hover {
+            background: #e4e6eb;
+        }
+
+        .toggle-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .toggle-icon {
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-btn.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .panel.active {
+            max-height: 2000px;
+        }
+
+        .input-item {
+            margin-bottom: 12px;
+        }
+
+        .label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #555;
+        }
+
+        .label-name {
+            flex: 1;
+        }
+
+        .label-value {
+            font-weight: 700;
+            color: #667eea;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e4e6eb;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reset {
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        .btn-reset:active {
+            background: #e4e6eb;
+        }
+
+        .btn-export {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-export:active {
+            background: #5568d3;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            text-align: center;
+        }
+
+        .kpi-card.highlight {
+            border-left-color: #ff6b6b;
+            background: linear-gradient(135deg, #ff6b6b15 0%, #ff6b6b08 100%);
+        }
+
+        .kpi-label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #667eea;
+            word-break: break-all;
+        }
+
+        .kpi-card.highlight .kpi-value {
+            color: #ff6b6b;
+        }
+
+        .kpi-unit {
+            font-size: 10px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid #f0f2f5;
+        }
+
+        .chart-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .table-wrapper {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            font-size: 9px;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 6px 3px;
+            text-align: center;
+            border-bottom: 1px solid #e4e6eb;
+        }
+
+        .data-table th {
+            background: #f9f9f9;
+            font-weight: 700;
+            color: #555;
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table td {
+            color: #666;
+        }
+
+        .data-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .table-amount {
+            font-weight: 600;
+        }
+
+        .positive {
+            color: #667eea;
+        }
+
+        .negative {
+            color: #ff6b6b;
+        }
+
+        .note {
+            background: #f0f8ff;
+            border-left: 4px solid #667eea;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #555;
+            line-height: 1.6;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 16px;
+            }
+
+            .kpi-value {
+                font-size: 20px;
+            }
+
+            .data-table {
+                font-size: 8px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 4px 2px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                max-width: 100%;
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .buttons {
+                display: none;
+            }
+
+            .chart-container {
+                page-break-inside: avoid;
+                height: 200px;
+            }
+
+            .table-wrapper {
+                page-break-inside: avoid;
+                font-size: 8px;
+            }
+
+            @page {
+                size: A4;
+                margin: 8mm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💇‍♀️ 美容サロン集客・回収シミュレーター</h1>
+            <p>HPで勝ち切り → LINEで利益最大化（実額ベース・丸め無し）</p>
+        </div>
+
+        <div class="content">
+            <!-- A. 料金系 -->
+            <div class="section">
+                <button class="toggle-btn" onclick="togglePanel(this, 'panelA')">
+                    <span>💰 料金体系</span>
+                    <span class="toggle-icon">▼</span>
+                </button>
+                <div class="panel active" id="panelA">
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">1) HP月額費用（円）</span>
+                            <span class="label-value" id="val-hp-fee">100000</span>
+                        </div>
+                        <input type="range" id="slide-hp-fee" min="0" max="300000" step="10000" value="100000" oninput="updateFromSlider('hp-fee')">
+                        <input type="number" id="inp-hp-fee" value="100000" oninput="updateFromInput('hp-fee')">
+                    </div>
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">2) HPコスト率（%）</span>
+                            <span class="label-value" id="val-hp-cost">2</span>
+                        </div>
+                        <input type="range" id="slide-hp-cost" min="0" max="10" step="0.1" value="2" oninput="updateFromSlider('hp-cost')">
+                        <input type="number" id="inp-hp-cost" value="2" step="0.1" oninput="updateFromInput('hp-cost')">
+                    </div>
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">3) LINE初期費用（円）</span>
+                            <span class="label-value" id="val-line-init">100000</span>
+                        </div>
+                        <input type="range" id="slide-line-init" min="0" max="300000" step="10000" value="100000" oninput="updateFromSlider('line-init')">
+                        <input type="number" id="inp-line-init" value="100000" oninput="updateFromInput('line-init')">
+                    </div>
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">4) LINE月額費用（円）</span>
+                            <span class="label-value" id="val-line-fee">30000</span>
+                        </div>
+                        <input type="range" id="slide-line-fee" min="0" max="200000" step="5000" value="30000" oninput="updateFromSlider('line-fee')">
+                        <input type="number" id="inp-line-fee" value="30000" oninput="updateFromInput('line-fee')">
+                    </div>
+                </div>
+            </div>
+
+            <!-- B. 売上・来店構造 -->
+            <div class="section">
+                <button class="toggle-btn" onclick="togglePanel(this, 'panelB')">
+                    <span>📊 売上・来店構造</span>
+                    <span class="toggle-icon">▼</span>
+                </button>
+                <div class="panel" id="panelB">
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">5) 平均客単価 AOV（円）</span>
+                            <span class="label-value" id="val-aov">9000</span>
+                        </div>
+                        <input type="range" id="slide-aov" min="2000" max="50000" step="500" value="9000" oninput="updateFromSlider('aov')">
+                        <input type="number" id="inp-aov" value="9000" oninput="updateFromInput('aov')">
+                    </div>
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">6) 新規来店数/月（人）</span>
+                            <span class="label-value" id="val-hp-new">5</span>
+                        </div>
+                        <input type="range" id="slide-hp-new" min="1" max="100" step="1" value="5" oninput="updateFromSlider('hp-new')">
+                        <input type="number" id="inp-hp-new" value="5" oninput="updateFromInput('hp-new')">
+                    </div>
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">7) 既存顧客数（初期人数）</span>
+                            <span class="label-value" id="val-existing">220</span>
+                        </div>
+                        <input type="range" id="slide-existing" min="50" max="1000" step="10" value="220" oninput="updateFromSlider('existing')">
+                        <input type="number" id="inp-existing" value="220" oninput="updateFromInput('existing')">
+                    </div>
+                </div>
+            </div>
+
+            <!-- C. 行動・移行パラメータ -->
+            <div class="section">
+                <button class="toggle-btn" onclick="togglePanel(this, 'panelC')">
+                    <span>🔄 行動・移行パラメータ</span>
+                    <span class="toggle-icon">▼</span>
+                </button>
+                <div class="panel" id="panelC">
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">8) HP→LINE切替率（%）</span>
+                            <span class="label-value" id="val-switch">40</span>
+                        </div>
+                        <input type="range" id="slide-switch" min="0" max="100" step="1" value="40" oninput="updateFromSlider('switch')">
+                        <input type="number" id="inp-switch" value="40" oninput="updateFromInput('switch')">
+                    </div>
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">9) HP月次来店率（%）</span>
+                            <span class="label-value" id="val-hp-repeat">25</span>
+                        </div>
+                        <input type="range" id="slide-hp-repeat" min="0" max="100" step="1" value="25" oninput="updateFromSlider('hp-repeat')">
+                        <input type="number" id="inp-hp-repeat" value="25" oninput="updateFromInput('hp-repeat')">
+                    </div>
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">10) LINE月次来店率（%）</span>
+                            <span class="label-value" id="val-line-repeat">85</span>
+                        </div>
+                        <input type="range" id="slide-line-repeat" min="0" max="100" step="1" value="85" oninput="updateFromSlider('line-repeat')">
+                        <input type="number" id="inp-line-repeat" value="85" oninput="updateFromInput('line-repeat')">
+                    </div>
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">11) LINE客単価上昇率（%）</span>
+                            <span class="label-value" id="val-line-up">2</span>
+                        </div>
+                        <input type="range" id="slide-line-up" min="0" max="50" step="1" value="2" oninput="updateFromSlider('line-up')">
+                        <input type="number" id="inp-line-up" value="2" oninput="updateFromInput('line-up')">
+                    </div>
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">12) 移行スピード係数 k</span>
+                            <span class="label-value" id="val-k">0.5</span>
+                        </div>
+                        <input type="range" id="slide-k" min="0.1" max="1" step="0.05" value="0.5" oninput="updateFromSlider('k')">
+                        <input type="number" id="inp-k" value="0.5" step="0.05" oninput="updateFromInput('k')">
+                    </div>
+                </div>
+            </div>
+
+            <!-- D. 期間 -->
+            <div class="section">
+                <button class="toggle-btn" onclick="togglePanel(this, 'panelD')">
+                    <span>📅 シミュレーション期間</span>
+                    <span class="toggle-icon">▼</span>
+                </button>
+                <div class="panel" id="panelD">
+                    <div class="input-item">
+                        <div class="label">
+                            <span class="label-name">13) シミュレーション月数</span>
+                            <span class="label-value" id="val-months">12</span>
+                        </div>
+                        <input type="range" id="slide-months" min="1" max="36" step="1" value="12" oninput="updateFromSlider('months')">
+                        <input type="number" id="inp-months" value="12" oninput="updateFromInput('months')">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ボタン -->
+            <div class="buttons">
+                <button class="btn-reset" onclick="resetDefaults()">🔄 リセット</button>
+                <button class="btn-export" onclick="exportCSV()">📥 CSVダウンロード</button>
+            </div>
+
+            <!-- 結果 -->
+            <div class="results">
+                <div class="kpi-grid">
+                    <div class="kpi-card highlight">
+                        <div class="kpi-label">ブレークイーブン月</div>
+                        <div class="kpi-value" id="kpi-be">-</div>
+                        <div class="kpi-unit">投資回収時期</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">累計追加粗利</div>
+                        <div class="kpi-value" id="kpi-profit">-</div>
+                        <div class="kpi-unit">最終月</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">顧客総数</div>
+                        <div class="kpi-value" id="kpi-total-cust">-</div>
+                        <div class="kpi-unit">最終月</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">LINE顧客率</div>
+                        <div class="kpi-value" id="kpi-line">-</div>
+                        <div class="kpi-unit">最終月</div>
+                    </div>
+                </div>
+
+                <!-- グラフ 1 -->
+                <div class="chart-container">
+                    <div class="chart-title">📈 ベースライン vs 改善 - 月間売上推移</div>
+                    <canvas id="chart1"></canvas>
+                </div>
+
+                <!-- グラフ 2 -->
+                <div class="chart-container">
+                    <div class="chart-title">📊 顧客数推移（HP vs LINE）</div>
+                    <canvas id="chart2"></canvas>
+                </div>
+
+                <!-- グラフ 3 -->
+                <div class="chart-container">
+                    <div class="chart-title">💰 累計差益推移（ブレークイーブン赤マーカー）</div>
+                    <canvas id="chart3"></canvas>
+                </div>
+
+                <!-- テーブル -->
+                <div class="table-wrapper">
+                    <div class="chart-title">📋 月別詳細データ（実額ベース・小数点保持）</div>
+                    <table class="data-table" id="data-table">
+                        <thead>
+                            <tr>
+                                <th>月</th>
+                                <th>p_eff</th>
+                                <th>HP顧客</th>
+                                <th>LINE顧客</th>
+                                <th>HP売上(万)</th>
+                                <th>LINE売上(万)</th>
+                                <th>合計売上(万)</th>
+                                <th>ベース(万)</th>
+                                <th>費用(万)</th>
+                                <th>差益(万)</th>
+                                <th>累計差益(万)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-data"></tbody>
+                    </table>
+                </div>
+
+                <div class="note">
+                    <strong>📌 実額ベース・丸め無しモデル：</strong>
+                    <br>売上 = 顧客数 × 客単価 × 月次来店率（全て小数点保持）
+                    <br><strong>💡 特徴：</strong> 毎月の実額が累積、精度100%、CSV出力は小数点4位
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chartInstances = {};
+        const defaults = {
+            'hp-fee': 100000,
+            'hp-cost': 2,
+            'line-init': 100000,
+            'line-fee': 30000,
+            'aov': 9000,
+            'hp-new': 5,
+            'existing': 220,
+            'switch': 40,
+            'hp-repeat': 25,
+            'line-repeat': 85,
+            'line-up': 2,
+            'k': 0.5,
+            'months': 12
+        };
+
+        function togglePanel(btn, panelId) {
+            const panel = document.getElementById(panelId);
+            btn.classList.toggle('active');
+            panel.classList.toggle('active');
+        }
+
+        function updateFromSlider(key) {
+            const slider = document.getElementById('slide-' + key);
+            const input = document.getElementById('inp-' + key);
+            const display = document.getElementById('val-' + key);
+            const value = parseFloat(slider.value);
+            if (isNaN(value)) return;
+            slider.value = value;
+            input.value = value;
+            display.textContent = formatDisplay(value);
+            simulate();
+        }
+
+        function updateFromInput(key) {
+            const slider = document.getElementById('slide-' + key);
+            const input = document.getElementById('inp-' + key);
+            const display = document.getElementById('val-' + key);
+            const value = parseFloat(input.value);
+            if (isNaN(value)) return;
+            slider.value = value;
+            input.value = value;
+            display.textContent = formatDisplay(value);
+            simulate();
+        }
+
+        function formatDisplay(num) {
+            if (num >= 10000) return (Math.round(num / 1000) / 10).toLocaleString('en-US', { maximumFractionDigits: 1 });
+            if (num >= 1000) return Math.round(num).toLocaleString('en-US');
+            if (Math.abs(num) > 100) return num.toFixed(0);
+            return num.toFixed(2);
+        }
+
+        function resetDefaults() {
+            Object.keys(defaults).forEach(key => {
+                const val = defaults[key];
+                document.getElementById('slide-' + key).value = val;
+                document.getElementById('inp-' + key).value = val;
+                document.getElementById('val-' + key).textContent = formatDisplay(val);
+            });
+            simulate();
+        }
+
+        function loadStorage() {
+            const saved = localStorage.getItem('salonSim');
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.keys(data).forEach(key => {
+                    document.getElementById('slide-' + key).value = data[key];
+                    document.getElementById('inp-' + key).value = data[key];
+                    document.getElementById('val-' + key).textContent = formatDisplay(data[key]);
+                });
+            } else {
+                resetDefaults();
+            }
+        }
+
+        function saveStorage() {
+            const data = {};
+            Object.keys(defaults).forEach(key => {
+                data[key] = parseFloat(document.getElementById('inp-' + key).value);
+            });
+            localStorage.setItem('salonSim', JSON.stringify(data));
+        }
+
+        function getParams() {
+            return {
+                hp_fee: parseFloat(document.getElementById('inp-hp-fee').value),
+                hp_cost_rate: parseFloat(document.getElementById('inp-hp-cost').value) / 100,
+                line_init: parseFloat(document.getElementById('inp-line-init').value),
+                line_fee: parseFloat(document.getElementById('inp-line-fee').value),
+                aov: parseFloat(document.getElementById('inp-aov').value),
+                new_customers_monthly: parseFloat(document.getElementById('inp-hp-new').value),
+                initial_customers: parseFloat(document.getElementById('inp-existing').value),
+                switch_rate: parseFloat(document.getElementById('inp-switch').value) / 100,
+                hp_visit_rate: parseFloat(document.getElementById('inp-hp-repeat').value) / 100,
+                line_visit_rate: parseFloat(document.getElementById('inp-line-repeat').value) / 100,
+                line_aov_uplift: parseFloat(document.getElementById('inp-line-up').value) / 100,
+                k_mig: parseFloat(document.getElementById('inp-k').value),
+                months: parseInt(document.getElementById('inp-months').value)
+            };
+        }
+
+        function simulate() {
+            const p = getParams();
+            saveStorage();
+
+            const results = {
+                t: [],
+                p_eff: [],
+                hp_customers: [],
+                line_customers: [],
+                hp_revenue: [],
+                line_revenue: [],
+                revenue_total: [],
+                revenue_base: [],
+                cost_scn: [],
+                cost_base: [],
+                delta_profit: [],
+                cum_delta_profit: [],
+                be_month: null,
+                final_profit: 0,
+                final_hp_cust: 0,
+                final_line_cust: 0,
+                final_line_rate: 0
+            };
+
+            let base_customers = p.initial_customers;
+            let hp_customers = p.initial_customers;
+            let line_customers = 0;
+
+            let cum_delta = 0;
+            let be_found = false;
+
+            const aov_line = p.aov * (1 + p.line_aov_uplift);
+
+            for (let t = 1; t <= p.months; t++) {
+                // ===== ベースライン（HP only） =====
+                const base_visits = (base_customers * p.hp_visit_rate) + p.new_customers_monthly;
+                const revenue_base = base_visits * p.aov;
+                const cost_base = p.hp_fee + revenue_base * p.hp_cost_rate;
+                base_customers = (base_customers + p.new_customers_monthly) * p.hp_visit_rate;
+
+                // ===== 改善シナリオ（HP + LINE） =====
+                const p_eff = Math.min(1, p.switch_rate * (1 - Math.exp(-p.k_mig * t)));
+
+                const new_hp = p.new_customers_monthly * (1 - p_eff);
+                const new_line = p.new_customers_monthly * p_eff;
+
+                // 既存HP顧客から LINE へ移行する人数
+                const migration = (hp_customers + new_hp) * p.hp_visit_rate * p_eff;
+
+                // 売上計算（顧客数 × 客単価 × 来店率）
+                const hp_revenue = (hp_customers + new_hp) * p.hp_visit_rate * p.aov;
+                const line_revenue = (line_customers + new_line + migration) * p.line_visit_rate * aov_line;
+                const revenue_total = hp_revenue + line_revenue;
+
+                // 費用計算
+                let cost_scn = p.hp_fee + hp_revenue * p.hp_cost_rate + p.line_fee;
+                if (t === 1) cost_scn += p.line_init;
+
+                // 差益計算
+                const profit_base = revenue_base - cost_base;
+                const profit_scn = revenue_total - cost_scn;
+                const delta = profit_scn - profit_base;
+                cum_delta += delta;
+
+                if (!be_found && cum_delta >= 0) {
+                    results.be_month = t;
+                    be_found = true;
+                }
+
+                // 顧客数の更新（実額ベース・小数点保持）
+                hp_customers = (hp_customers + new_hp) * p.hp_visit_rate * (1 - p_eff);
+                line_customers = (line_customers + new_line + migration) * p.line_visit_rate;
+
+                // 記録
+                results.t.push(t);
+                results.p_eff.push(p_eff);
+                results.hp_customers.push(hp_customers);
+                results.line_customers.push(line_customers);
+                results.hp_revenue.push(hp_revenue);
+                results.line_revenue.push(line_revenue);
+                results.revenue_total.push(revenue_total);
+                results.revenue_base.push(revenue_base);
+                results.cost_scn.push(cost_scn);
+                results.cost_base.push(cost_base);
+                results.delta_profit.push(delta);
+                results.cum_delta_profit.push(cum_delta);
+            }
+
+            if (results.cum_delta_profit.length > 0) {
+                results.final_profit = results.cum_delta_profit[results.cum_delta_profit.length - 1];
+                results.final_hp_cust = results.hp_customers[results.t.length - 1];
+                results.final_line_cust = results.line_customers[results.t.length - 1];
+                const total_cust = results.final_hp_cust + results.final_line_cust;
+                results.final_line_rate = total_cust > 0 ? (results.final_line_cust / total_cust) * 100 : 0;
+            }
+
+            updateDisplay(results);
+            drawCharts(results);
+            drawTable(results);
+            window.lastResults = results;
+        }
+
+        function updateDisplay(res) {
+            document.getElementById('kpi-be').textContent = res.be_month ? `${res.be_month}ヶ月` : '未達';
+            document.getElementById('kpi-profit').textContent = (res.final_profit / 10000).toFixed(2) + '万';
+            document.getElementById('kpi-total-cust').textContent = (res.final_hp_cust + res.final_line_cust).toFixed(1);
+            document.getElementById('kpi-line').textContent = res.final_line_rate.toFixed(1) + '%';
+        }
+
+        function drawCharts(res) {
+            const labels = res.t.map(m => `${m}月`);
+
+            const ctx1 = document.getElementById('chart1').getContext('2d');
+            if (chartInstances.chart1) chartInstances.chart1.destroy();
+            chartInstances.chart1 = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '改善（LINE導入後）',
+                            data: res.revenue_total,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 2.5,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#667eea'
+                        },
+                        {
+                            label: 'ベースライン（HP only）',
+                            data: res.revenue_base,
+                            borderColor: '#ccc',
+                            backgroundColor: 'rgba(200, 200, 200, 0.05)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#ccc'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true, labels: { font: { size: 11 } } } },
+                    scales: { y: { beginAtZero: true, ticks: { callback: v => (v / 1000000).toFixed(1) + 'M' } } }
+                }
+            });
+
+            const ctx2 = document.getElementById('chart2').getContext('2d');
+            if (chartInstances.chart2) chartInstances.chart2.destroy();
+            chartInstances.chart2 = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'HP顧客数',
+                            data: res.hp_customers,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 2.5,
+                            tension: 0.4,
+                            fill: false,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#667eea'
+                        },
+                        {
+                            label: 'LINE顧客数',
+                            data: res.line_customers,
+                            borderColor: '#f093fb',
+                            backgroundColor: 'rgba(240, 147, 251, 0.1)',
+                            borderWidth: 2.5,
+                            tension: 0.4,
+                            fill: false,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#f093fb'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true, labels: { font: { size: 11 } } } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            const ctx3 = document.getElementById('chart3').getContext('2d');
+            if (chartInstances.chart3) chartInstances.chart3.destroy();
+
+            chartInstances.chart3 = new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '累計差益',
+                        data: res.cum_delta_profit,
+                        borderColor: '#667eea',
+                        backgroundColor: res.cum_delta_profit.map(v => v >= 0 ? 'rgba(102, 200, 234, 0.1)' : 'rgba(255, 107, 107, 0.1)'),
+                        borderWidth: 2.5,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 3,
+                        pointBackgroundColor: res.cum_delta_profit.map(v => v >= 0 ? '#667eea' : '#ff6b6b')
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true, labels: { font: { size: 11 } } } },
+                    scales: { y: { beginAtZero: true, ticks: { callback: v => (v / 10000).toFixed(0) + '万' } } }
+                }
+            });
+        }
+
+        function drawTable(res) {
+            const tbody = document.getElementById('tbody-data');
+            tbody.innerHTML = '';
+            for (let i = 0; i < res.t.length; i++) {
+                const deltaClass = res.delta_profit[i] >= 0 ? 'positive' : 'negative';
+                const cumClass = res.cum_delta_profit[i] >= 0 ? 'positive' : 'negative';
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${res.t[i]}</td>
+                    <td>${(res.p_eff[i] * 100).toFixed(1)}%</td>
+                    <td>${res.hp_customers[i].toFixed(2)}</td>
+                    <td>${res.line_customers[i].toFixed(2)}</td>
+                    <td class="table-amount">${(res.hp_revenue[i] / 10000).toFixed(2)}</td>
+                    <td class="table-amount">${(res.line_revenue[i] / 10000).toFixed(2)}</td>
+                    <td class="table-amount">${(res.revenue_total[i] / 10000).toFixed(2)}</td>
+                    <td class="table-amount">${(res.revenue_base[i] / 10000).toFixed(2)}</td>
+                    <td class="table-amount">${(res.cost_scn[i] / 10000).toFixed(2)}</td>
+                    <td class="table-amount ${deltaClass}">${(res.delta_profit[i] / 10000).toFixed(2)}</td>
+                    <td class="table-amount ${cumClass}" style="font-weight: 700;">${(res.cum_delta_profit[i] / 10000).toFixed(2)}</td>
+                `;
+            }
+        }
+
+        function exportCSV() {
+            if (!window.lastResults) return;
+            const res = window.lastResults;
+            let csv = '月,p_eff(%),HP顧客数,LINE顧客数,HP売上(万),LINE売上(万),合計売上(万),ベース売上(万),費用(万),差益(万),累計差益(万)\n';
+            for (let i = 0; i < res.t.length; i++) {
+                csv += `${res.t[i]},${(res.p_eff[i]*100).toFixed(2)},${res.hp_customers[i].toFixed(4)},${res.line_customers[i].toFixed(4)},${(res.hp_revenue[i]/10000).toFixed(4)},${(res.line_revenue[i]/10000).toFixed(4)},${(res.revenue_total[i]/10000).toFixed(4)},${(res.revenue_base[i]/10000).toFixed(4)},${(res.cost_scn[i]/10000).toFixed(4)},${(res.delta_profit[i]/10000).toFixed(4)},${(res.cum_delta_profit[i]/10000).toFixed(4)}\n`;
+            }
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'salon_sim_actual_basis.csv';
+            a.click();
+        }
+
+        window.addEventListener('load', () => {
+            loadStorage();
+            simulate();
+        });
+    </script>
+</body>
+</html>
