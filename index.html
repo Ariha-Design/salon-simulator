@@ -3,932 +3,951 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>美容サロン LINE導入 顧客資産化シミュレーター</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <title>美容サロン向け LTV×ROI×ROAS 成長シミュレーター</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #fdf2f8 0%, #f3e7f5 50%, #e0f2fe 100%);
+            padding: 20px;
             min-height: 100vh;
-            padding: 12px;
         }
+        
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
         }
+        
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 28px;
-            text-align: center;
-        }
-        .header h1 { font-size: 28px; margin-bottom: 8px; font-weight: 700; }
-        .header p { font-size: 14px; opacity: 0.9; line-height: 1.6; }
-        .content { padding: 24px; }
-        .input-section {
-            background: #f9f9f9;
-            padding: 24px;
+            background: white;
             border-radius: 12px;
-            margin-bottom: 28px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-        @media (max-width: 1024px) { .row { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 768px) { .row { grid-template-columns: 1fr; } }
-        .section { }
-        .section-title {
-            font-size: 13px;
-            font-weight: 700;
+        
+        .header h1 {
+            font-size: 32px;
             color: #333;
-            margin-bottom: 14px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
+            margin-bottom: 15px;
         }
-        .input-item { margin-bottom: 12px; }
-        .label {
+        
+        .header p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #856404;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .input-panel h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .input-section {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .input-section:last-child {
+            border-bottom: none;
+        }
+        
+        .input-section h4 {
             font-size: 12px;
-            font-weight: 600;
-            color: #555;
-            margin-bottom: 4px;
-            display: block;
+            font-weight: bold;
+            color: #7c3aed;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        input[type="number"],
-        select {
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        
+        input, select {
             width: 100%;
-            padding: 8px;
+            padding: 10px 12px;
             border: 1px solid #ddd;
             border-radius: 6px;
-            font-size: 12px;
-        }
-        .buttons {
-            display: flex;
-            gap: 12px;
-            margin: 24px 0 0 0;
-        }
-        button {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
             font-size: 13px;
-            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+        
+        .input-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+        
+        .slider-group {
+            margin: 15px 0;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(to right, #e5e7eb, #c084fc, #7c3aed);
+            outline: none;
+            -webkit-appearance: none;
+            margin-bottom: 8px;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #7c3aed;
             cursor: pointer;
-            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        .btn-verify { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #7c3aed;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        .btn-verify:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
-        }
-        .btn-export { 
-            background: #999;
-            color: white;
-        }
-        .btn-export:hover { 
-            background: #777;
-        }
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 24px 0;
-        }
-        @media (max-width: 768px) { .comparison-grid { grid-template-columns: 1fr; } }
-        .comparison-card {
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 5px solid;
-        }
-        .comparison-card.before {
-            background: #f5f5f5;
-            border-left-color: #999;
-        }
-        .comparison-card.after {
-            background: #e8f5e9;
-            border-left-color: #4caf50;
-        }
-        .comparison-title {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-        .comparison-item {
+        
+        .slider-value {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-size: 13px;
-            margin-bottom: 10px;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
-        .comparison-label { color: #666; }
-        .comparison-value { font-weight: 600; color: #333; }
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 14px;
-            margin: 24px 0;
+        
+        .slider-value-display {
+            font-weight: bold;
+            color: #7c3aed;
+            font-size: 16px;
         }
-        .kpi-card {
-            background: #f9f9f9;
-            padding: 18px;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-            text-align: center;
+        
+        .results {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
         }
-        .kpi-card.positive {
-            border-left-color: #4caf50;
-            background: #e8f5e9;
-        }
-        .kpi-card.highlight {
-            border-left-color: #ff9800;
-            background: #fff3cd;
-        }
-        .kpi-label { font-size: 11px; color: #666; margin-bottom: 8px; font-weight: 600; }
-        .kpi-value { font-size: 22px; font-weight: 700; color: #667eea; }
-        .kpi-card.positive .kpi-value { color: #4caf50; }
-        .kpi-card.highlight .kpi-value { color: #ff9800; }
-        .kpi-unit { font-size: 10px; color: #999; margin-top: 2px; }
-        .chart-container {
-            position: relative;
-            height: 320px;
-            margin: 28px 0;
+        
+        .comparison-table {
             background: white;
             border-radius: 12px;
-            padding: 18px;
-            border: 1px solid #f0f2f5;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .chart-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: #333; }
-        .insight-box {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a8 100%);
-            border-left: 4px solid #ff9800;
+        
+        .table-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #1e40af 100%);
+            color: white;
             padding: 20px;
-            border-radius: 10px;
-            margin: 24px 0;
-            font-size: 13px;
-            line-height: 1.8;
-            color: #664d00;
+            font-weight: bold;
+            font-size: 16px;
         }
-        .insight-title { font-weight: 700; margin-bottom: 10px; }
-        .calc-note {
-            background: #f0f8ff;
-            border-left: 3px solid #667eea;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            color: #666;
-            margin-top: 6px;
-        }
-        .table-wrapper {
-            margin: 28px 0;
-            overflow-x: auto;
-            background: white;
-            border-radius: 12px;
-            padding: 18px;
-            border: 1px solid #f0f2f5;
-        }
-        .table-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: #333; }
-        .data-table {
+        
+        table {
             width: 100%;
-            font-size: 11px;
             border-collapse: collapse;
-            background: white;
         }
-        .data-table th, .data-table td {
-            padding: 8px 6px;
+        
+        th {
+            background: #f5f5f5;
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            border-bottom: 2px solid #eee;
+            color: #333;
+        }
+        
+        td {
+            padding: 16px 14px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+        
+        tr:hover {
+            background: #fafafa;
+        }
+        
+        .metric-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .metric-sublabel {
+            font-size: 11px;
+            color: #999;
+            display: block;
+            margin-top: 2px;
+        }
+        
+        .value-before {
             text-align: right;
-            border-bottom: 1px solid #e4e6eb;
-        }
-        .data-table th {
-            background: #f0f2f5;
-            font-weight: 700;
-            color: #555;
-            position: sticky;
-            top: 0;
-        }
-        .data-table .month-cell {
-            text-align: center;
             font-weight: 600;
         }
-        .positive { color: #4caf50; font-weight: 600; }
+        
+        .value-after {
+            text-align: right;
+            font-weight: bold;
+            color: #7c3aed;
+        }
+        
+        .improvement-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ddd6fe 0%, #dbeafe 100%);
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: #7c3aed;
+            font-weight: bold;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .chart-container h3 {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .simple-chart {
+            display: flex;
+            gap: 20px;
+            justify-content: space-around;
+        }
+        
+        .chart-item {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .chart-item-label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #999;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        .bar-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 150px;
+            gap: 10px;
+        }
+        
+        .bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        
+        .bar-fill {
+            width: 40px;
+            background: linear-gradient(180deg, #cbd5e1 0%, #94a3b8 100%);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+        }
+        
+        .bar-fill.after {
+            background: linear-gradient(180deg, #a855f7 0%, #7c3aed 100%);
+        }
+        
+        .bar-value {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 6px;
+        }
+        
+        .explanation {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .explanation h3 {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .explanation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .explanation-card {
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .explanation-card.ltv {
+            background: #f3e8ff;
+            border-left-color: #a855f7;
+        }
+        
+        .explanation-card.roi {
+            background: #dbeafe;
+            border-left-color: #1e40af;
+        }
+        
+        .explanation-card.roas {
+            background: #dcfce7;
+            border-left-color: #16a34a;
+        }
+        
+        .explanation-card h4 {
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        
+        .explanation-card p {
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        
+        strong {
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>💎 美容サロン LINE導入 顧客資産化シミュレーター</h1>
-            <p>既存顧客＋新規顧客を含めた計算 | 生存率曲線適用 | 36ヶ月の未来を比較</p>
+            <h1>📊 美容サロン向け LTV×ROI×ROAS 成長シミュレーター</h1>
+            <p>
+                LINE導入でお客様の通い続ける期間が長くなると、1人あたりの売上（LTV）がどう変わり、
+                広告の効き目（ROI・ROAS）がどう改善するかを見える化します。
+            </p>
+            <div class="warning-box">
+                💡 <strong>下の数値を入力すると、LINE導入による改善効果が自動で計算されます。</strong><br/>
+                ※ 実際の結果はサロンの施術力・サービス品質・施策実行力により変動します
+            </div>
         </div>
 
-        <div class="content">
-            <div class="input-section">
-                <div class="row">
-                    <div class="section">
-                        <div class="section-title">💰 基本データ</div>
-                        
-                        <div class="input-item">
-                            <label class="label">平均客単価（円）</label>
-                            <input type="number" id="inp-unit-price" value="8000">
-                        </div>
+        <div class="main-grid">
+            <!-- 左：入力フォーム -->
+            <div class="input-panel">
+                <h3>📝 数値を入力</h3>
 
-                        <div class="input-item">
-                            <label class="label">月平均来店回数</label>
-                            <select id="inp-monthly-visits">
-                                <option value="0.5">0.5回（約2ヶ月に1回）</option>
-                                <option value="0.67">0.67回（約6週に1回）</option>
-                                <option value="0.7" selected>0.7回（約1.5ヶ月に1回）</option>
-                                <option value="1">1.0回（毎月1回）</option>
-                                <option value="1.5">1.5回（毎月1.5回）</option>
-                                <option value="2">2.0回（毎月2回）</option>
-                                <option value="3">3.0回（毎月3回）</option>
-                                <option value="4">4.0回（毎月4回）</option>
-                            </select>
-                            <div class="calc-note">美容室の平均は月0.7〜1.0回程度</div>
-                        </div>
-
-                        <div class="input-item">
-                            <label class="label">現在の総顧客数（人）</label>
-                            <input type="number" id="inp-total-customers" value="120">
-                            <div class="calc-note">お店に登録/来店したことある顧客</div>
-                        </div>
-
-                        <div class="input-item">
-                            <label class="label">毎月の平均来店顧客数（人）</label>
-                            <input type="number" id="inp-monthly-visitors" value="80">
-                            <div class="calc-note">毎月実際に来店する顧客数</div>
-                        </div>
-
-                        <div class="input-item">
-                            <label class="label">現状（Before）の12ヶ月生存率</label>
-                            <select id="inp-before-survival">
-                                <option value="40">シビア（40%）- 離脱が多い</option>
-                                <option value="55">低め（55%）</option>
-                                <option value="65" selected>通常（65%）- 美容室平均</option>
-                                <option value="75">高め（75%）</option>
-                                <option value="85">好調（85%）- 優良店</option>
-                            </select>
-                            <div class="calc-note">導入前の生存率から計算<br>Afterはここから改善されます</div>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <div class="section-title">📱 現状と導入効果</div>
-                        
-                        <div class="input-item">
-                            <label class="label">現状の月間新規客数（人）</label>
-                            <input type="number" id="inp-current-new" value="15">
-                        </div>
-
-                        <div class="input-item">
-                            <label class="label">導入後の月間新規客数（人）</label>
-                            <input type="number" id="inp-after-new" value="20">
-                        </div>
-
-                        <div class="input-item">
-                            <label class="label">導入後の客単価改善率（%）</label>
-                            <input type="number" id="inp-price-improvement" value="10" step="1">
-                            <div class="calc-note">例：10% = 客単価が1.1倍に</div>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <div class="section-title">🔄 リピート率改善 ＆ コスト</div>
-                        
-                        <div class="input-item">
-                            <label class="label">導入後のリピート率改善率（%）</label>
-                            <input type="number" id="inp-visit-improvement" value="15" step="1">
-                            <div class="calc-note">来店頻度がUP<br>例：15% = 0.7回 → 0.805回</div>
-                        </div>
-
-                        <div class="input-item">
-                            <label class="label">LINE初期費用（円）</label>
-                            <input type="number" id="inp-line-init" value="150000">
-                        </div>
-
-                        <div class="input-item">
-                            <label class="label">LINE月額費用（円）</label>
-                            <input type="number" id="inp-line-fee" value="30000">
-                        </div>
-
-                        <div class="input-item">
-                            <label class="label">年間広告費予算（円）</label>
-                            <input type="number" id="inp-annual-ad-budget" value="0">
-                            <div class="calc-note">月額に換算して計算に含めます</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="buttons">
-                    <button class="btn-verify" onclick="simulate()">🚀 検証開始</button>
-                    <button class="btn-export" onclick="exportCSV()">📥 CSVダウンロード</button>
-                </div>
-            </div>
-
-            <!-- インサイト -->
-            <div class="insight-box">
-                <div class="insight-title">💡 計算ロジック（順調に運用した場合）</div>
-                <div>
-                    <strong>【既存顧客の計算】</strong><br>
-                    m月目の既存客 = 毎月来店数 × (12ヶ月生存率)^((m-1)/12)<br>
-                    例：生存率65%, 来店数80人の場合<br>
-                    　1月：80 × (0.65)^0 = 80人<br>
-                    　2月：80 × (0.65)^(1/12) ≈ 77人<br>
-                    　12月：80 × (0.65)^(11/12) ≈ 52人<br><br>
+                <!-- LTV -->
+                <div class="input-section">
+                    <h4>LTV計算</h4>
                     
-                    <strong>【新規顧客・売上の計算】</strong><br>
-                    Before: 毎月15人、客単価8000円、月来店0.7回<br><br>
-                    After:<br>
-                    　1-3月目：Before同じ（新規15人、客単価8000円）<br>
-                    　4月目～：改善版（新規20人、客単価8800円、月来店0.805回）<br><br>
+                    <div class="form-group">
+                        <label>👤 平均顧客単価</label>
+                        <input type="number" id="unitPrice" value="10000" min="1000" step="1000">
+                        <p class="input-hint">例：10,000円</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📅 月間来店頻度</label>
+                        <select id="frequency">
+                            <option value="0.4">月0.4回（3ヶ月に1回）</option>
+                            <option value="0.5" selected>月0.5回（2ヶ月に1回）</option>
+                            <option value="0.67">月0.67回（1.5ヶ月に1回）</option>
+                            <option value="1">月1回</option>
+                            <option value="1.2">月1.2回</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>⏱️ 継続月数</label>
+                        <select id="retentionMonths">
+                            <option value="6">6ヶ月</option>
+                            <option value="9">9ヶ月</option>
+                            <option value="12" selected>12ヶ月（1年）</option>
+                            <option value="18">18ヶ月</option>
+                            <option value="24">24ヶ月（2年）</option>
+                            <option value="36">36ヶ月（3年）</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>✨ 総合改善率（LTV全体に適用）</label>
+                        <div class="slider-group">
+                            <input type="range" id="improvementRate" min="5" max="30" value="10">
+                            <div class="slider-value">
+                                <span></span>
+                                <span class="slider-value-display"><span id="improvementValue">10</span>%</span>
+                            </div>
+                        </div>
+                        <p class="input-hint">（デフォルト10%が目安）</p>
+                    </div>
+                </div>
+
+                <!-- ROI -->
+                <div class="input-section">
+                    <h4>ROI計算</h4>
                     
-                    <strong>【テーブル内訳】</strong><br>
-                    月新規 = その月に獲得した新規顧客<br>
-                    既存残存 = 毎月来店数 × 月単位生存率<br>
-                    過去新規 = 過去の新規で今も生き残ってる顧客<br>
-                    アクティブ = 月新規 + 既存残存 + 過去新規<br><br>
-                    <strong>【月間売上】</strong><br>
-                    アクティブ顧客数 × 客単価 × 月間来店回数<br><br>
-                    ✅ 月間コスト = LINE月額 + 年間広告費÷12<br>
-                    ✅ 利益 = (月間売上 - コスト)の累計
-                </div>
-            </div>
-
-            <!-- 12ヶ月比較 -->
-            <div style="background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 28px;">
-                <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">📊 12ヶ月後の状況</h2>
-                
-                <div class="comparison-grid">
-                    <div class="comparison-card before">
-                        <div class="comparison-title">❌ 現状（導入前）</div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">初期既存顧客</span>
-                            <span class="comparison-value" id="existing-init">-人</span>
-                        </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">12ヶ月新規累計</span>
-                            <span class="comparison-value" id="cust-12m-before">-人</span>
-                        </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">12ヶ月累積売上</span>
-                            <span class="comparison-value" id="revenue-12m-before">-</span>
-                        </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">実現利益</span>
-                            <span class="comparison-value" id="profit-12m-before">-</span>
-                        </div>
+                    <div class="form-group">
+                        <label>👥 月平均新規来店数</label>
+                        <input type="number" id="monthlyNewCustomers" value="15" min="1">
+                        <p class="input-hint">人/月</p>
                     </div>
 
-                    <div class="comparison-card after">
-                        <div class="comparison-title">✅ 導入後（12ヶ月後）</div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">初期既存顧客</span>
-                            <span class="comparison-value" id="existing-init-after">-人</span>
-                        </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">12ヶ月新規累計</span>
-                            <span class="comparison-value" id="cust-12m-after">-人</span>
-                        </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">12ヶ月累積売上</span>
-                            <span class="comparison-value" id="revenue-12m-after">-</span>
-                        </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">実現利益</span>
-                            <span class="comparison-value" id="profit-12m-after">-</span>
-                        </div>
+                    <div class="form-group">
+                        <label>💰 現状：月間広告費（ホットペッパー等）</label>
+                        <input type="number" id="adSpend" value="200000" min="10000" step="10000">
+                        <p class="input-hint">Before：現在のホットペッパー費</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>💰 追加：月間広告費（LINE運用費等）</label>
+                        <input type="number" id="additionalAdSpend" value="50000" min="0" step="1000">
+                        <p class="input-hint">After：LINE導入後に追加する月額費（0でもOK）</p>
+                    </div>
+                </div>
+
+                <!-- ROAS -->
+                <div class="input-section">
+                    <h4>ROAS計算・新規客数</h4>
+                    
+                    <div class="form-group">
+                        <label>📊 新規来店客月間売上</label>
+                        <input type="number" id="hotpepperRevenue" value="105000" min="100000" step="100000">
+                        <p class="input-hint">円</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>💰 顧客獲得単価（CPA）</label>
+                        <input type="number" id="cpa" value="5000" min="1000" step="1000">
+                        <p class="input-hint">LINE導入後、1人の新規顧客を獲得するのにかかる費用<br/>
+                        <strong>参考：美容サロン業界の相場は3,000～10,000円</strong></p>
                     </div>
                 </div>
             </div>
 
-            <!-- 24ヶ月比較 -->
-            <div style="background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 28px;">
-                <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">🔮 24ヶ月後の状況</h2>
-                
-                <div class="comparison-grid">
-                    <div class="comparison-card before">
-                        <div class="comparison-title">❌ 現状（導入前）</div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">24ヶ月新規累計</span>
-                            <span class="comparison-value" id="cust-24m-before">-人</span>
-                        </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">24ヶ月累積売上</span>
-                            <span class="comparison-value" id="revenue-24m-before">-</span>
-                        </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">実現利益</span>
-                            <span class="comparison-value" id="profit-24m-before">-</span>
-                        </div>
-                    </div>
+            <!-- 右：結果表示 -->
+            <div class="results">
+                <!-- 比較表 -->
+                <div class="comparison-table">
+                    <div class="table-header">📊 Before / After 比較</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>指標</th>
+                                <th style="text-align: right;">Before</th>
+                                <th style="text-align: right;">After</th>
+                                <th style="text-align: right;">改善率</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="metric-label">
+                                    LTV
+                                    <span class="metric-sublabel">(生涯売上)</span>
+                                </td>
+                                <td class="value-before">¥<span id="ltv_before">96000</span></td>
+                                <td class="value-after">¥<span id="ltv_after">127776</span></td>
+                                <td style="text-align: right;">
+                                    <span class="improvement-badge"><span id="ltv_improvement">+33.1</span>%</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="metric-label">
+                                    ROI
+                                    <span class="metric-sublabel">(投資回収率)</span>
+                                </td>
+                                <td class="value-before"><span id="roi_before">1340</span>%</td>
+                                <td class="value-after"><span id="roi_after">1816</span>%</td>
+                                <td style="text-align: right;">
+                                    <span class="improvement-badge"><span id="roi_improvement">+476</span>%</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="metric-label">
+                                    ROAS
+                                    <span class="metric-sublabel">(広告回収率)</span>
+                                </td>
+                                <td class="value-before"><span id="roas_before">600</span>%</td>
+                                <td class="value-after"><span id="roas_after">799</span>%</td>
+                                <td style="text-align: right;">
+                                    <span class="improvement-badge"><span id="roas_improvement">+33.1</span>%</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div class="comparison-card after">
-                        <div class="comparison-title">✅ 導入後（24ヶ月後）</div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">24ヶ月新規累計</span>
-                            <span class="comparison-value" id="cust-24m-after">-人</span>
+                <!-- 説明セクション -->
+                <div class="explanation">
+                    <h3>📖 この結果の見方</h3>
+                    <div class="explanation-grid">
+                        <div class="explanation-card ltv">
+                            <h4>1️⃣ LTVについて</h4>
+                            <p><strong>LTVとは：</strong>1人のお客様が通い続けてくれる間に使ってくれる合計金額。LINE導入で「また来たい」と思う関係ができれば、通い続ける期間が長くなり、LTVが増えます。</p>
                         </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">24ヶ月累積売上</span>
-                            <span class="comparison-value" id="revenue-24m-after">-</span>
+                        <div class="explanation-card roi">
+                            <h4>2️⃣ ROIについて</h4>
+                            <p><strong>ROIとは：</strong>投資した広告費がどれだけ回収できたかの割合。ROI 100% = 広告費と同じだけ利益が返ってきた、という意味です。</p>
                         </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">実現利益</span>
-                            <span class="comparison-value" id="profit-24m-after">-</span>
+                        <div class="explanation-card roas">
+                            <h4>3️⃣ ROASについて</h4>
+                            <p><strong>ROASとは：</strong>広告費100円に対して何円の売上が返ってくるか。ROAS 200% = 100円の広告で200円の売上が返ってくる、という意味です。</p>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- 36ヶ月比較 -->
-            <div style="background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 28px;">
-                <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">🚀 36ヶ月後（3年後）の状況</h2>
-                
-                <div class="comparison-grid">
-                    <div class="comparison-card before">
-                        <div class="comparison-title">❌ 現状（導入前）</div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">36ヶ月新規累計</span>
-                            <span class="comparison-value" id="cust-36m-before">-人</span>
-                        </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">36ヶ月累積売上</span>
-                            <span class="comparison-value" id="revenue-36m-before">-</span>
-                        </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">実現利益</span>
-                            <span class="comparison-value" id="profit-36m-before">-</span>
-                        </div>
-                    </div>
-
-                    <div class="comparison-card after">
-                        <div class="comparison-title">✅ 導入後（36ヶ月後）</div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">36ヶ月新規累計</span>
-                            <span class="comparison-value" id="cust-36m-after">-人</span>
-                        </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">36ヶ月累積売上</span>
-                            <span class="comparison-value" id="revenue-36m-after">-</span>
-                        </div>
-                        <div class="comparison-item">
-                            <span class="comparison-label">実現利益</span>
-                            <span class="comparison-value" id="profit-36m-after">-</span>
-                        </div>
-                    </div>
-                </div>
+    <!-- 年間積み上げ効果セクション -->
+    <div style="margin-top: 50px;">
+        <div class="comparison-table">
+            <div class="table-header">📊 1年・2年・3年の年間積み上げ効果</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>期間</th>
+                        <th style="text-align: right;">Before</th>
+                        <th style="text-align: right;">After</th>
+                        <th style="text-align: right;">差額</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="metric-label">1年</td>
+                        <td class="value-before">¥<span id="annual1_before">0</span></td>
+                        <td class="value-after">¥<span id="annual1_after">0</span></td>
+                        <td style="text-align: right;">
+                            <span class="improvement-badge"><span id="annual1_diff">+0</span>円</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">2年</td>
+                        <td class="value-before">¥<span id="annual2_before">0</span></td>
+                        <td class="value-after">¥<span id="annual2_after">0</span></td>
+                        <td style="text-align: right;">
+                            <span class="improvement-badge"><span id="annual2_diff">+0</span>円</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">3年</td>
+                        <td class="value-before">¥<span id="annual3_before">0</span></td>
+                        <td class="value-after">¥<span id="annual3_after">0</span></td>
+                        <td style="text-align: right;">
+                            <span class="improvement-badge"><span id="annual3_diff">+0</span>円</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="background: #fff9e6; border-top: 1px solid #eee; padding: 15px; font-size: 12px; color: #666;">
+                <strong>※ 売上保証ではなくLTV改善による将来価値</strong><br/>
+                このシミュレーションは、集客数が変わらないまま1人あたりの顧客単価・来店頻度・継続月数が改善された場合の参考値です。
             </div>
+        </div>
 
-            <!-- KPI比較 -->
-            <div>
-                <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 14px;">🎯 長期比較KPI</h2>
-                <div class="kpi-grid">
-                    <div class="kpi-card highlight">
-                        <div class="kpi-label">12ヶ月 売上差</div>
-                        <div class="kpi-value" id="kpi-revenue-12m">-</div>
-                        <div class="kpi-unit">円</div>
-                    </div>
-                    <div class="kpi-card positive">
-                        <div class="kpi-label">12ヶ月 利益差</div>
-                        <div class="kpi-value" id="kpi-profit-12m">-</div>
-                        <div class="kpi-unit">円</div>
-                    </div>
-                    <div class="kpi-card highlight">
-                        <div class="kpi-label">24ヶ月 売上差</div>
-                        <div class="kpi-value" id="kpi-revenue-24m">-</div>
-                        <div class="kpi-unit">円</div>
-                    </div>
-                    <div class="kpi-card positive">
-                        <div class="kpi-label">24ヶ月 利益差</div>
-                        <div class="kpi-value" id="kpi-profit-24m">-</div>
-                        <div class="kpi-unit">円</div>
-                    </div>
-                    <div class="kpi-card highlight">
-                        <div class="kpi-label">36ヶ月 売上差</div>
-                        <div class="kpi-value" id="kpi-revenue-36m">-</div>
-                        <div class="kpi-unit">円</div>
-                    </div>
-                    <div class="kpi-card positive">
-                        <div class="kpi-label">36ヶ月 利益差</div>
-                        <div class="kpi-value" id="kpi-profit-36m">-</div>
-                        <div class="kpi-unit">円</div>
-                    </div>
-                </div>
-            </div>
+        <!-- グラフ -->
+        <div class="chart-container" style="margin-top: 30px;">
+            <h3>📈 年間積み上げ効果の推移</h3>
+            <canvas id="annualChart" style="max-height: 300px;"></canvas>
+        </div>
 
-            <!-- グラフ -->
-            <div class="chart-container">
-                <div class="chart-title">📈 月別累積売上推移（Before vs After）</div>
-                <canvas id="chart-revenue"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <div class="chart-title">💰 月別実現利益推移（Before vs After）</div>
-                <canvas id="chart-profit"></canvas>
-            </div>
-
-            <!-- 月別詳細テーブル -->
-            <div class="table-wrapper">
-                <div class="table-title">📋 月別シミュレーション詳細（既存顧客＆新規顧客分離）</div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th colspan="8" style="background: #f5f5f5; text-align: center;">❌ 現状（Before）</th>
-                            <th colspan="9" style="background: #e8f5e9; text-align: center;">✅ 導入後（After）</th>
-                        </tr>
-                        <tr>
-                            <th class="month-cell">月</th>
-                            <th>月新規<br><span style="font-weight: 400; font-size: 10px; color: #999;">(毎月獲得)</span></th>
-                            <th>既存残存<br><span style="font-weight: 400; font-size: 10px; color: #999;">(初期顧客)</span></th>
-                            <th>過去新規<br><span style="font-weight: 400; font-size: 10px; color: #999;">(過去生存)</span></th>
-                            <th>アクティブ<br><span style="font-weight: 400; font-size: 10px; color: #999;">(合計)</span></th>
-                            <th>月売上</th>
-                            <th>月利益</th>
-                            <th>累積利益</th>
-                            <th class="month-cell">月</th>
-                            <th>月新規<br><span style="font-weight: 400; font-size: 10px; color: #999;">(毎月獲得)</span></th>
-                            <th>既存残存<br><span style="font-weight: 400; font-size: 10px; color: #999;">(初期顧客)</span></th>
-                            <th>過去新規<br><span style="font-weight: 400; font-size: 10px; color: #999;">(過去生存)</span></th>
-                            <th>アクティブ<br><span style="font-weight: 400; font-size: 10px; color: #999;">(合計)</span></th>
-                            <th>月売上</th>
-                            <th>コスト</th>
-                            <th>月利益</th>
-                            <th>累積利益</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody"></tbody>
-                </table>
+        <!-- 説明文 -->
+        <div style="background: #f5f5f5; border-left: 4px solid #7c3aed; padding: 20px; border-radius: 6px; margin-top: 30px; margin-bottom: 30px;">
+            <h4 style="font-weight: bold; color: #333; margin-bottom: 10px;">💡 このグラフの見方</h4>
+            <p style="font-size: 14px; color: #666; line-height: 1.6;">
+                集客数が変わらなくても、<strong>LTV改善により長期で大きく差が生まれます</strong>。<br/>
+                LINE導入で顧客の継続期間が長くなれば、1年目はわずかな差ですが、2年目・3年目と時間が経つほど効果が加速します。
+            </p>
+            
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                <h5 style="font-weight: bold; color: #333; margin-bottom: 8px; font-size: 12px;">【計算詳細】</h5>
+                <p style="font-size: 11px; color: #666; line-height: 1.8; font-family: 'Courier New', monospace;">
+                    <span id="calculation_detail"></span>
+                </p>
             </div>
         </div>
     </div>
 
     <script>
-        let charts = {};
+        // 入力要素の取得
+        const unitPrice = document.getElementById('unitPrice');
+        const frequency = document.getElementById('frequency');
+        const retentionMonths = document.getElementById('retentionMonths');
+        const improvementRate = document.getElementById('improvementRate');
+        const monthlyNewCustomers = document.getElementById('monthlyNewCustomers');
+        const adSpend = document.getElementById('adSpend');
+        const additionalAdSpend = document.getElementById('additionalAdSpend');
+        const hotpepperRevenue = document.getElementById('hotpepperRevenue');
+        const cpa = document.getElementById('cpa');
 
-        function getParams() {
-            const unitPrice = parseFloat(document.getElementById('inp-unit-price').value);
-            const monthlyVisits = parseFloat(document.getElementById('inp-monthly-visits').value);
-            const totalCustomers = parseInt(document.getElementById('inp-total-customers').value);
-            const monthlyVisitors = parseInt(document.getElementById('inp-monthly-visitors').value);
-            const beforeSurvival = parseInt(document.getElementById('inp-before-survival').value);
-            const currentNew = parseInt(document.getElementById('inp-current-new').value);
-            const afterNew = parseInt(document.getElementById('inp-after-new').value);
-            const priceImprovement = parseInt(document.getElementById('inp-price-improvement').value);
-            const visitImprovement = parseInt(document.getElementById('inp-visit-improvement').value);
-            const lineInit = parseInt(document.getElementById('inp-line-init').value);
-            const lineFee = parseInt(document.getElementById('inp-line-fee').value);
-            const annualAdBudgetRaw = document.getElementById('inp-annual-ad-budget').value;
-            const annualAdBudget = annualAdBudgetRaw === '' ? 0 : parseInt(annualAdBudgetRaw);
+        // 出力要素の取得
+        const outputElements = {
+            ltv_before: document.getElementById('ltv_before'),
+            ltv_after: document.getElementById('ltv_after'),
+            ltv_improvement: document.getElementById('ltv_improvement'),
+            roi_before: document.getElementById('roi_before'),
+            roi_after: document.getElementById('roi_after'),
+            roi_improvement: document.getElementById('roi_improvement'),
+            roas_before: document.getElementById('roas_before'),
+            roas_after: document.getElementById('roas_after'),
+            roas_improvement: document.getElementById('roas_improvement'),
+            improvementValue: document.getElementById('improvementValue'),
+            // 年間積み上げ効果用
+            annual1_before: document.getElementById('annual1_before'),
+            annual1_after: document.getElementById('annual1_after'),
+            annual1_diff: document.getElementById('annual1_diff'),
+            annual2_before: document.getElementById('annual2_before'),
+            annual2_after: document.getElementById('annual2_after'),
+            annual2_diff: document.getElementById('annual2_diff'),
+            annual3_before: document.getElementById('annual3_before'),
+            annual3_after: document.getElementById('annual3_after'),
+            annual3_diff: document.getElementById('annual3_diff'),
+        };
 
-            return {
-                unitPrice: isNaN(unitPrice) ? 8000 : unitPrice,
-                monthlyVisits: isNaN(monthlyVisits) ? 0.7 : monthlyVisits,
-                totalCustomers: isNaN(totalCustomers) ? 120 : totalCustomers,
-                monthlyVisitors: isNaN(monthlyVisitors) ? 80 : monthlyVisitors,
-                beforeSurvival: isNaN(beforeSurvival) ? 65 : beforeSurvival,
-                currentNew: isNaN(currentNew) ? 15 : currentNew,
-                afterNew: isNaN(afterNew) ? 20 : afterNew,
-                priceImprovement: isNaN(priceImprovement) ? 10 : priceImprovement,
-                visitImprovement: isNaN(visitImprovement) ? 15 : visitImprovement,
-                lineInit: isNaN(lineInit) ? 150000 : lineInit,
-                lineFee: isNaN(lineFee) ? 30000 : lineFee,
-                annualAdBudget: annualAdBudget
-            };
-        }
-
-        // 生存率を計算
-        function getSurvivalRate(ageMonths, isAfter, beforeSurvival12) {
-            if (!isAfter) {
-                // Before: 当月（ageMonths=0）は100%から緩く低下
-                if (ageMonths === 0) return 1.0;
-                if (ageMonths > 36) return 0;
-                
-                const survivalAt12 = beforeSurvival12 / 100;
-                const survivalDropTo12 = 1 - survivalAt12; // 100%から12%の低下分
-                const survivalDropAfter12 = survivalAt12;  // 12%から0%の低下分
-                
-                if (ageMonths <= 12) {
-                    // 0-12ヶ月：100% → beforeSurvival12%
-                    return 1 - (ageMonths / 12) * survivalDropTo12;
-                } else {
-                    // 12-36ヶ月：beforeSurvival12% → 0%
-                    return survivalAt12 - ((ageMonths - 12) / 24) * survivalDropAfter12;
-                }
-            } else {
-                // After: 当月（ageMonths=0）は100%、その後段階的に改善
-                if (ageMonths === 0) return 1.0;
-                if (ageMonths === 1) return 0.60;
-                if (ageMonths === 2) return 0.65;
-                if (ageMonths === 3) return 0.70;
-                if (ageMonths === 4) return 0.75;
-                if (ageMonths === 5) return 0.77;
-                return 0.80; // 6ヶ月目以降は80%で安定
+        // 計算関数
+        function calculate() {
+            const unitPriceVal = parseFloat(unitPrice.value) || 0;
+            const frequencyVal = parseFloat(frequency.value) || 1;
+            const retentionVal = parseFloat(retentionMonths.value) || 12;
+            const improvementVal = parseFloat(improvementRate.value) / 100;
+            const newCustomersVal = parseFloat(monthlyNewCustomers.value) || 30;
+            // 広告費：0を含め、明示的に値をチェック
+            let adSpendVal = parseFloat(adSpend.value);
+            if (isNaN(adSpendVal)) {
+                adSpendVal = 200000;
             }
-        }
-
-        function simulate() {
-            const p = getParams();
-            const monthlyAdBudget = p.annualAdBudget / 12;
+            const additionalAdSpendVal = parseFloat(additionalAdSpend.value) || 0;
+            const revenueVal = parseFloat(hotpepperRevenue.value) || 1200000;
+            const cpaVal = parseFloat(cpa.value) || 5000;
 
             // LTV計算
-            const unitPriceAfter = p.unitPrice * (1 + p.priceImprovement / 100);
-            const monthlyVisitsAfter = p.monthlyVisits * (1 + p.visitImprovement / 100);
+            const ltv_beforeVal = unitPriceVal * frequencyVal * retentionVal;
+            const ltv_afterVal = ltv_beforeVal * (1 + improvementVal);
+            const ltv_improvementVal = ((ltv_afterVal - ltv_beforeVal) / ltv_beforeVal) * 100;
 
-            // 月別シミュレーション
-            const months = 36;
-            const data = {
-                months: [],
-                before: { 
-                    newCohorts: [],
-                    existingCustomers: [],
-                    activeCustomers: [],
-                    monthlyRevenue: [],
-                    monthlyProfit: [],
-                    cumulativeRevenue: [],
-                    cumulativeProfit: []
-                },
-                after: { 
-                    newCohorts: [],
-                    existingCustomers: [],
-                    activeCustomers: [],
-                    monthlyRevenue: [],
-                    monthlyCost: [],
-                    monthlyProfit: [],
-                    cumulativeRevenue: [],
-                    cumulativeProfit: []
-                }
-            };
-
-            let cumRevenueBefore = 0, cumProfitBefore = 0;
-            let cumRevenueAfter = 0, cumProfitAfter = 0;
-
-            for (let m = 1; m <= months; m++) {
-                data.months.push(m);
-
-                // ===== Before =====
-                // 既存顧客：毎月の来店者に、12ヶ月生存率を月単位で適用
-                // m月目の既存客 = 毎月来店数 × (12ヶ月生存率)^((m-1)/12)
-                const survivalPerMonth = Math.pow(p.beforeSurvival / 100, 1 / 12);
-                const existingBefore = p.monthlyVisitors * Math.pow(survivalPerMonth, m - 1);
-                
-                // 新規コホートの合計
-                let newCohortBefore = 0;
-                for (let cohort = 1; cohort <= m; cohort++) {
-                    const ageMonths = m - cohort;  // 当月は0ヶ月（100%）
-                    const survival = getSurvivalRate(ageMonths, false, p.beforeSurvival);
-                    newCohortBefore += p.currentNew * survival;
-                }
-                
-                const activeCustomersBefore = existingBefore + newCohortBefore;
-                const monthlyRevenueBefore = activeCustomersBefore * p.unitPrice * p.monthlyVisits;
-                const costBefore = 0;
-                const monthlyProfitBefore = monthlyRevenueBefore - costBefore;
-                
-                cumRevenueBefore += monthlyRevenueBefore;
-                cumProfitBefore += monthlyProfitBefore;
-
-                // ===== After =====
-                // 既存顧客：Before同じ計算（既存は変わらない）
-                const existingAfter = p.monthlyVisitors * Math.pow(survivalPerMonth, m - 1);
-                
-                // 1-3ヶ月目はBefore同じ、4月目から改善版
-                const isAfterRamped = m > 3;
-                const newCountAfter = isAfterRamped ? p.afterNew : p.currentNew;
-                const unitPriceAfterActual = isAfterRamped ? unitPriceAfter : p.unitPrice;
-                const monthlyVisitsAfterActual = isAfterRamped ? monthlyVisitsAfter : p.monthlyVisits;
-                
-                // 新規コホートの合計
-                let newCohortAfter = 0;
-                for (let cohort = 1; cohort <= m; cohort++) {
-                    const ageMonths = m - cohort;  // 当月は0ヶ月（100%）
-                    const cohortMonth = cohort;
-                    const cohortIsRamped = cohortMonth > 3;
-                    
-                    // そのコホートが獲得された時点での条件を適用
-                    const cohortNewCount = cohortIsRamped ? p.afterNew : p.currentNew;
-                    const survival = getSurvivalRate(ageMonths, cohortIsRamped, p.beforeSurvival);
-                    newCohortAfter += cohortNewCount * survival;
-                }
-                
-                const activeCustomersAfter = existingAfter + newCohortAfter;
-                const monthlyRevenueAfter = activeCustomersAfter * unitPriceAfterActual * monthlyVisitsAfterActual;
-                const costAfter = (m === 1 ? p.lineInit : 0) + p.lineFee + monthlyAdBudget;
-                const monthlyProfitAfter = monthlyRevenueAfter - costAfter;
-                
-                cumRevenueAfter += monthlyRevenueAfter;
-                cumProfitAfter += monthlyProfitAfter;
-
-                // データ格納
-                data.before.newCohorts.push(newCohortBefore);
-                data.before.existingCustomers.push(existingBefore);
-                data.before.activeCustomers.push(activeCustomersBefore);
-                data.before.monthlyRevenue.push(monthlyRevenueBefore);
-                data.before.monthlyProfit.push(monthlyProfitBefore);
-                data.before.cumulativeRevenue.push(cumRevenueBefore);
-                data.before.cumulativeProfit.push(cumProfitBefore);
-
-                data.after.newCohorts.push(newCohortAfter);
-                data.after.existingCustomers.push(existingAfter);
-                data.after.activeCustomers.push(activeCustomersAfter);
-                data.after.monthlyRevenue.push(monthlyRevenueAfter);
-                data.after.monthlyCost.push(costAfter);
-                data.after.monthlyProfit.push(monthlyProfitAfter);
-                data.after.cumulativeRevenue.push(cumRevenueAfter);
-                data.after.cumulativeProfit.push(cumProfitAfter);
+            // ROI計算（リアル版）
+            // Before ROI：広告費が0の場合は計算できない
+            let roi_beforeVal;
+            if (adSpendVal === 0) {
+                roi_beforeVal = null;
+            } else {
+                roi_beforeVal = ((newCustomersVal * ltv_beforeVal - adSpendVal) / adSpendVal) * 100;
             }
 
-            // データ抽出
-            const idx12 = 11, idx24 = 23, idx36 = 35;
+            // After ROI：追加広告費から新規客増加数を自動計算（CPA使用）
+            const totalAdSpendAfter = adSpendVal + additionalAdSpendVal;
+            const additionalNewCustomers = Math.floor(additionalAdSpendVal / cpaVal);
+            const afterNewCustomersVal = newCustomersVal + additionalNewCustomers;
+            const afterSalesVal_new = afterNewCustomersVal * ltv_afterVal;
+            const roi_afterVal = ((afterSalesVal_new - totalAdSpendAfter) / totalAdSpendAfter) * 100;
 
-            // 表示
-            document.getElementById('existing-init').textContent = p.existingCustomers + '人';
-            document.getElementById('existing-init-after').textContent = p.existingCustomers + '人';
+            // ROAS計算
+            let roas_beforeVal;
+            if (adSpendVal === 0) {
+                roas_beforeVal = null;
+            } else {
+                roas_beforeVal = (newCustomersVal * ltv_beforeVal / adSpendVal) * 100;
+            }
+            
+            // After：After新規客数 × LTV_after ÷ (ホットペッパー費 + LINE運用費)
+            const roas_afterVal = (afterSalesVal_new / totalAdSpendAfter) * 100;
+            const roi_afterVal_final = ((afterSalesVal_new - totalAdSpendAfter) / totalAdSpendAfter) * 100;
 
-            document.getElementById('cust-12m-before').textContent = (12 * p.currentNew) + '人';
-            document.getElementById('revenue-12m-before').textContent = data.before.cumulativeRevenue[idx12].toLocaleString('ja-JP', { maximumFractionDigits: 0 }) + '円';
-            document.getElementById('profit-12m-before').textContent = data.before.cumulativeProfit[idx12].toLocaleString('ja-JP', { maximumFractionDigits: 0 }) + '円';
+            // 表示を更新
+            outputElements.ltv_before.textContent = ltv_beforeVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+            outputElements.ltv_after.textContent = ltv_afterVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+            outputElements.ltv_improvement.textContent = (ltv_improvementVal >= 0 ? '+' : '') + ltv_improvementVal.toFixed(1);
 
-            document.getElementById('cust-12m-after').textContent = (12 * p.afterNew) + '人';
-            document.getElementById('revenue-12m-after').textContent = data.after.cumulativeRevenue[idx12].toLocaleString('ja-JP', { maximumFractionDigits: 0 }) + '円';
-            document.getElementById('profit-12m-after').textContent = data.after.cumulativeProfit[idx12].toLocaleString('ja-JP', { maximumFractionDigits: 0 }) + '円';
+            // ROI表示（0の場合は「ー」）
+            if (roi_beforeVal === null) {
+                outputElements.roi_before.textContent = "ー";
+            } else {
+                outputElements.roi_before.textContent = Math.round(roi_beforeVal);
+            }
+            outputElements.roi_after.textContent = Math.round(roi_afterVal);
+            
+            if (roi_beforeVal === null) {
+                outputElements.roi_improvement.textContent = "ー";
+            } else {
+                const roiDiff = Math.round(roi_afterVal - roi_beforeVal);
+                outputElements.roi_improvement.textContent = (roiDiff >= 0 ? '+' : '') + roiDiff;
+            }
 
-            document.getElementById('cust-24m-before').textContent = (24 * p.currentNew) + '人';
-            document.getElementById('revenue-24m-before').textContent = data.before.cumulativeRevenue[idx24].toLocaleString('ja-JP', { maximumFractionDigits: 0 }) + '円';
-            document.getElementById('profit-24m-before').textContent = data.before.cumulativeProfit[idx24].toLocaleString('ja-JP', { maximumFractionDigits: 0 }) + '円';
+            // ROAS表示（0の場合は「ー」）
+            if (roas_beforeVal === null) {
+                outputElements.roas_before.textContent = "ー";
+            } else {
+                outputElements.roas_before.textContent = Math.round(roas_beforeVal);
+            }
+            outputElements.roas_after.textContent = Math.round(roas_afterVal);
+            
+            if (roas_beforeVal === null) {
+                outputElements.roas_improvement.textContent = "ー";
+            } else {
+                const roasImprovementRate = ((roas_afterVal / roas_beforeVal - 1) * 100);
+                outputElements.roas_improvement.textContent = (roasImprovementRate >= 0 ? '+' : '') + roasImprovementRate.toFixed(1);
+            }
 
-            document.getElementById('cust-24m-after').textContent = (24 * p.afterNew) + '人';
-            document.getElementById('revenue-24m-after').textContent = data.after.cumulativeRevenue[idx24].toLocaleString('ja-JP', { maximumFractionDigits: 0 }) + '円';
-            document.getElementById('profit-24m-after').textContent = data.after.cumulativeProfit[idx24].toLocaleString('ja-JP', { maximumFractionDigits: 0 }) + '円';
+            // 計算詳細の表示
+            let detailText = `
+LTV Before = ${unitPriceVal.toLocaleString()} × ${frequencyVal} × ${retentionVal} = ¥${ltv_beforeVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 })}<br/>
+LTV After = ${ltv_beforeVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 })} × (1 + ${(improvementVal * 100).toFixed(0)}%) = ¥${ltv_afterVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 })}<br/>
+<br/>
+新規客数 Before = ${newCustomersVal}人<br/>
+新規客数 After = ${newCustomersVal}人 + ${additionalAdSpendVal.toLocaleString()} ÷ ${cpaVal.toLocaleString()} = ${afterNewCustomersVal}人<br/>
+<br/>`;
 
-            document.getElementById('cust-36m-before').textContent = (36 * p.currentNew) + '人';
-            document.getElementById('revenue-36m-before').textContent = data.before.cumulativeRevenue[idx36].toLocaleString('ja-JP', { maximumFractionDigits: 0 }) + '円';
-            document.getElementById('profit-36m-before').textContent = data.before.cumulativeProfit[idx36].toLocaleString('ja-JP', { maximumFractionDigits: 0 }) + '円';
+            if (roi_beforeVal === null) {
+                detailText += `ROI Before = 計算できません（広告費0のため）<br/>`;
+            } else {
+                detailText += `ROI Before = (${newCustomersVal} × ${ltv_beforeVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 })} - ${adSpendVal.toLocaleString()}) ÷ ${adSpendVal.toLocaleString()} × 100 = ${Math.round(roi_beforeVal)}%<br/>`;
+            }
+            detailText += `ROI After = (${afterNewCustomersVal} × ${ltv_afterVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 })} - ${totalAdSpendAfter.toLocaleString()}) ÷ ${totalAdSpendAfter.toLocaleString()} × 100 = ${Math.round(roi_afterVal)}%<br/>
+<br/>`;
 
-            document.getElementById('cust-36m-after').textContent = (36 * p.afterNew) + '人';
-            document.getElementById('revenue-36m-after').textContent = data.after.cumulativeRevenue[idx36].toLocaleString('ja-JP', { maximumFractionDigits: 0 }) + '円';
-            document.getElementById('profit-36m-after').textContent = data.after.cumulativeProfit[idx36].toLocaleString('ja-JP', { maximumFractionDigits: 0 }) + '円';
+            if (roas_beforeVal === null) {
+                detailText += `ROAS Before = 計算できません（広告費0のため）<br/>`;
+            } else {
+                detailText += `ROAS Before = ${newCustomersVal} × ${ltv_beforeVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 })} ÷ ${adSpendVal.toLocaleString()} × 100 = ${Math.round(roas_beforeVal)}%<br/>`;
+            }
+            detailText += `ROAS After = ${afterNewCustomersVal} × ${ltv_afterVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 })} ÷ ${totalAdSpendAfter.toLocaleString()} × 100 = ${Math.round(roas_afterVal)}%`;
 
-            // KPI
-            document.getElementById('kpi-revenue-12m').textContent = (data.after.cumulativeRevenue[idx12] - data.before.cumulativeRevenue[idx12]).toLocaleString('ja-JP', { maximumFractionDigits: 0 });
-            document.getElementById('kpi-profit-12m').textContent = (data.after.cumulativeProfit[idx12] - data.before.cumulativeProfit[idx12]).toLocaleString('ja-JP', { maximumFractionDigits: 0 });
-            document.getElementById('kpi-revenue-24m').textContent = (data.after.cumulativeRevenue[idx24] - data.before.cumulativeRevenue[idx24]).toLocaleString('ja-JP', { maximumFractionDigits: 0 });
-            document.getElementById('kpi-profit-24m').textContent = (data.after.cumulativeProfit[idx24] - data.before.cumulativeProfit[idx24]).toLocaleString('ja-JP', { maximumFractionDigits: 0 });
-            document.getElementById('kpi-revenue-36m').textContent = (data.after.cumulativeRevenue[idx36] - data.before.cumulativeRevenue[idx36]).toLocaleString('ja-JP', { maximumFractionDigits: 0 });
-            document.getElementById('kpi-profit-36m').textContent = (data.after.cumulativeProfit[idx36] - data.before.cumulativeProfit[idx36]).toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+            document.getElementById('calculation_detail').innerHTML = detailText;
 
-            drawCharts(data);
-            drawTable(data, p);
+            outputElements.improvementValue.textContent = improvementRate.value;
 
-            window.lastResults = { data, p };
+            // 年間積み上げ効果の計算
+            const annualNewCustomers = newCustomersVal * 12;
+            const annualNewCustomersAfter = afterNewCustomersVal * 12;
+            const annual1_beforeVal = annualNewCustomers * ltv_beforeVal;
+            const annual1_afterVal = annualNewCustomersAfter * ltv_afterVal;
+            const annual1_diffVal = annual1_afterVal - annual1_beforeVal;
+
+            const annual2_beforeVal = annual1_beforeVal * 2;
+            const annual2_afterVal = annual1_afterVal * 2;
+            const annual2_diffVal = annual2_afterVal - annual2_beforeVal;
+
+            const annual3_beforeVal = annual1_beforeVal * 3;
+            const annual3_afterVal = annual1_afterVal * 3;
+            const annual3_diffVal = annual3_afterVal - annual3_beforeVal;
+
+            // 年間積み上げ効果の表示
+            outputElements.annual1_before.textContent = annual1_beforeVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+            outputElements.annual1_after.textContent = annual1_afterVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+            outputElements.annual1_diff.textContent = (annual1_diffVal >= 0 ? '+' : '') + annual1_diffVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+
+            outputElements.annual2_before.textContent = annual2_beforeVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+            outputElements.annual2_after.textContent = annual2_afterVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+            outputElements.annual2_diff.textContent = (annual2_diffVal >= 0 ? '+' : '') + annual2_diffVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+
+            outputElements.annual3_before.textContent = annual3_beforeVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+            outputElements.annual3_after.textContent = annual3_afterVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+            outputElements.annual3_diff.textContent = (annual3_diffVal >= 0 ? '+' : '') + annual3_diffVal.toLocaleString('ja-JP', { maximumFractionDigits: 0 });
+
+            // グラフの更新
+            updateAnnualChart(annual1_beforeVal, annual1_afterVal, annual2_beforeVal, annual2_afterVal, annual3_beforeVal, annual3_afterVal);
         }
 
-        function drawCharts(data) {
-            const labels = data.months.map(m => m + '月');
+        // イベントリスナー設定
+        unitPrice.addEventListener('input', calculate);
+        frequency.addEventListener('change', calculate);
+        retentionMonths.addEventListener('change', calculate);
+        improvementRate.addEventListener('input', calculate);
+        monthlyNewCustomers.addEventListener('input', calculate);
+        adSpend.addEventListener('input', calculate);
+        additionalAdSpend.addEventListener('input', calculate);
+        hotpepperRevenue.addEventListener('input', calculate);
+        cpa.addEventListener('input', calculate);
 
-            const ctxRevenue = document.getElementById('chart-revenue').getContext('2d');
-            if (charts.revenue) charts.revenue.destroy();
-            charts.revenue = new Chart(ctxRevenue, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: '現状（Before）',
-                            data: data.before.cumulativeRevenue,
-                            borderColor: '#999',
-                            backgroundColor: 'rgba(150, 150, 150, 0.05)',
-                            borderWidth: 2,
-                            borderDash: [5, 5],
-                            tension: 0.4,
-                            pointRadius: 3
-                        },
-                        {
-                            label: '導入後（After）',
-                            data: data.after.cumulativeRevenue,
-                            borderColor: '#4caf50',
-                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                            borderWidth: 2.5,
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: true } },
-                    scales: { y: { ticks: { callback: v => '¥' + (v / 1000000).toFixed(1) + 'M' } } }
+        // 年間積み上げ効果グラフを描画
+        function updateAnnualChart(y1_before, y1_after, y2_before, y2_after, y3_before, y3_after) {
+            const canvas = document.getElementById('annualChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.parentElement.offsetWidth;
+            const height = 300;
+            canvas.width = width;
+            canvas.height = height;
+
+            const maxValue = Math.max(y1_before, y1_after, y2_before, y2_after, y3_before, y3_after) * 1.1;
+            const padding = 50;
+            const graphWidth = width - 100;
+            const graphHeight = height - 100;
+
+            // 背景
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, width, height);
+
+            // グリッド線
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + (graphHeight / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(padding + graphWidth, y);
+                ctx.stroke();
+            }
+
+            // X軸
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding + graphWidth, padding + graphHeight);
+            ctx.stroke();
+
+            // Y軸
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, padding + graphHeight);
+            ctx.stroke();
+
+            // データポイント
+            const dataPoints = [
+                { x: 0, before: y1_before, after: y1_after, label: '1年' },
+                { x: 1, before: y2_before, after: y2_after, label: '2年' },
+                { x: 2, before: y3_before, after: y3_after, label: '3年' }
+            ];
+
+            // Before線
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            dataPoints.forEach((point, i) => {
+                const x = padding + (graphWidth / 2.5) * point.x;
+                const y = padding + graphHeight - (point.before / maxValue) * graphHeight;
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
                 }
             });
+            ctx.stroke();
 
-            const ctxProfit = document.getElementById('chart-profit').getContext('2d');
-            if (charts.profit) charts.profit.destroy();
-            charts.profit = new Chart(ctxProfit, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: '現状（Before）',
-                            data: data.before.cumulativeProfit,
-                            borderColor: '#999',
-                            backgroundColor: 'rgba(150, 150, 150, 0.05)',
-                            borderWidth: 2,
-                            borderDash: [5, 5],
-                            tension: 0.4,
-                            pointRadius: 3
-                        },
-                        {
-                            label: '導入後（After）',
-                            data: data.after.cumulativeProfit,
-                            borderColor: '#667eea',
-                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                            borderWidth: 2.5,
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: true } },
-                    scales: { y: { ticks: { callback: v => '¥' + (v / 1000000).toFixed(1) + 'M' } } }
+            // After線
+            ctx.strokeStyle = '#a855f7';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            dataPoints.forEach((point, i) => {
+                const x = padding + (graphWidth / 2.5) * point.x;
+                const y = padding + graphHeight - (point.after / maxValue) * graphHeight;
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
                 }
             });
+            ctx.stroke();
+
+            // データポイント（点）
+            dataPoints.forEach((point) => {
+                const x = padding + (graphWidth / 2.5) * point.x;
+
+                // Before点
+                const y_before = padding + graphHeight - (point.before / maxValue) * graphHeight;
+                ctx.fillStyle = '#999';
+                ctx.beginPath();
+                ctx.arc(x, y_before, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // After点
+                const y_after = padding + graphHeight - (point.after / maxValue) * graphHeight;
+                ctx.fillStyle = '#a855f7';
+                ctx.beginPath();
+                ctx.arc(x, y_after, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // ラベル
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(point.label, x, padding + graphHeight + 25);
+            });
+
+            // 凡例
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#999';
+            ctx.fillRect(padding, 10, 10, 10);
+            ctx.fillStyle = '#333';
+            ctx.fillText('Before', padding + 20, 19);
+
+            ctx.fillStyle = '#a855f7';
+            ctx.fillRect(padding + 120, 10, 10, 10);
+            ctx.fillStyle = '#333';
+            ctx.fillText('After', padding + 130, 19);
         }
 
-        function drawTable(data, p) {
-            const tbody = document.getElementById('tbody');
-            tbody.innerHTML = '';
-            for (let i = 0; i < data.months.length; i++) {
-                // Before
-                const monthlyNewBefore = p.currentNew;
-                const existingRemainingBefore = data.before.existingCustomers[i];
-                const pastNewRemainingBefore = Math.max(0, data.before.newCohorts[i] - p.currentNew);
-                
-                // After
-                const monthlyNewAfter = (data.months[i] <= 3) ? p.currentNew : p.afterNew;
-                const existingRemainingAfter = data.after.existingCustomers[i];
-                const pastNewRemainingAfter = Math.max(0, data.after.newCohorts[i] - monthlyNewAfter);
-                
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td class="month-cell">${data.months[i]}</td>
-                    <td>${monthlyNewBefore}</td>
-                    <td>${Math.round(existingRemainingBefore)}</td>
-                    <td>${Math.round(pastNewRemainingBefore)}</td>
-                    <td>${Math.round(data.before.activeCustomers[i])}</td>
-                    <td>${data.before.monthlyRevenue[i].toLocaleString('ja-JP', { maximumFractionDigits: 0 })}</td>
-                    <td>${data.before.monthlyProfit[i].toLocaleString('ja-JP', { maximumFractionDigits: 0 })}</td>
-                    <td class="positive">${data.before.cumulativeProfit[i].toLocaleString('ja-JP', { maximumFractionDigits: 0 })}</td>
-                    
-                    <td class="month-cell">${data.months[i]}</td>
-                    <td>${monthlyNewAfter}</td>
-                    <td>${Math.round(existingRemainingAfter)}</td>
-                    <td>${Math.round(pastNewRemainingAfter)}</td>
-                    <td>${Math.round(data.after.activeCustomers[i])}</td>
-                    <td>${data.after.monthlyRevenue[i].toLocaleString('ja-JP', { maximumFractionDigits: 0 })}</td>
-                    <td>${data.after.monthlyCost[i].toLocaleString('ja-JP', { maximumFractionDigits: 0 })}</td>
-                    <td>${data.after.monthlyProfit[i].toLocaleString('ja-JP', { maximumFractionDigits: 0 })}</td>
-                    <td class="positive">${data.after.cumulativeProfit[i].toLocaleString('ja-JP', { maximumFractionDigits: 0 })}</td>
-                `;
-            }
-        }
-
-        function exportCSV() {
-            if (!window.lastResults) return;
-            const { data, p } = window.lastResults;
-            let csv = '月,Before月新規,Before既存残存,Before過去新規,Beforeアクティブ,Before月売上,Before月利益,Before累積利益,After月新規,After既存残存,After過去新規,Afterアクティブ,After月売上,After月コスト,After月利益,After累積利益\n';
-            for (let i = 0; i < data.months.length; i++) {
-                const monthlyNewBefore = p.currentNew;
-                const existingRemainingBefore = data.before.existingCustomers[i];
-                const pastNewRemainingBefore = Math.max(0, data.before.newCohorts[i] - p.currentNew);
-                
-                const monthlyNewAfter = (data.months[i] <= 3) ? p.currentNew : p.afterNew;
-                const existingRemainingAfter = data.after.existingCustomers[i];
-                const pastNewRemainingAfter = Math.max(0, data.after.newCohorts[i] - monthlyNewAfter);
-                
-                csv += `${data.months[i]},${monthlyNewBefore},${existingRemainingBefore.toFixed(1)},${pastNewRemainingBefore.toFixed(1)},${data.before.activeCustomers[i].toFixed(1)},${data.before.monthlyRevenue[i].toFixed(0)},${data.before.monthlyProfit[i].toFixed(0)},${data.before.cumulativeProfit[i].toFixed(0)},${monthlyNewAfter},${existingRemainingAfter.toFixed(1)},${pastNewRemainingAfter.toFixed(1)},${data.after.activeCustomers[i].toFixed(1)},${data.after.monthlyRevenue[i].toFixed(0)},${data.after.monthlyCost[i].toFixed(0)},${data.after.monthlyProfit[i].toFixed(0)},${data.after.cumulativeProfit[i].toFixed(0)}\n`;
-            }
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'beauty_salon_simulation.csv';
-            link.click();
-        }
+        // 初期計算
+        calculate();
     </script>
 </body>
 </html>
